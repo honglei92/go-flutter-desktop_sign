@@ -4,7 +4,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:process_run/shell.dart';
-import 'dart:io' show Directory;
+import 'dart:io' show Directory, File;
 import 'package:path/path.dart' as path;
 
 void main() => runApp(MyApp());
@@ -49,13 +49,13 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   var shell = Shell();
 
   _press(int type) async {
-    FilePickerResult result =
-        await FilePicker.platform.pickFiles(type: FileType.any);
+    File result =
+        await FilePicker.getFile();
     if (result != null) {
       if (type == 1)
-        textEditingControllerApk.text = result.files.single.path;
+        textEditingControllerApk.text = result.path;
       else if (type == 2) {
-        textEditingControllerKeyFile.text = result.files.single.path;
+        textEditingControllerKeyFile.text = result.path;
       }
     } else {
       // User canceled the picker
@@ -66,14 +66,14 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    textEditingControllerPwd.addListener(() async {
+/*    textEditingControllerPwd.addListener(() async {
       keystorePath = textEditingControllerKeyFile.text.toString();
       mPassword = textEditingControllerPwd.text.toString();
       print("aaa" + mPassword);
       var keytoolStr =
           "echo " + mPassword + "|keytool -v -list -keystore " + keystorePath;
       await shell.run('''$keytoolStr''').then((value) => handle(value.outText));
-    });
+    });*/
   }
 
   @override
@@ -233,13 +233,12 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   Future<void> sign() async {
     var now = new DateTime.now();
     print(now);
-    var nowTime = now.toIso8601String();
     unSignedApkPath = textEditingControllerApk.text.toString();
     var tempUnSignedApkPath = unSignedApkPath;
     signedApkPath = tempUnSignedApkPath.replaceAll(".apk", "signed.apk");
     var shellStr = "echo " +
         mPassword +
-        "|jar\\jre\\bin\\jarsigner -verbose -keystore " +
+        "|D:\\jar\\jre\\bin\\jarsigner.exe -verbose -keystore " +
         keystorePath +
         " -signedjar " +
         signedApkPath +
@@ -255,7 +254,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     mPassword = textEditingControllerPwd.text.toString();
     print("aaa" + mPassword);
     var keytoolStr =
-        "echo " + mPassword + "|keytool -v -list -keystore " + keystorePath;
+        "echo " + mPassword + "|C:\\jar\\jre\\bin\\keytool.exe -v -list -keystore " + keystorePath;
     await shell.run('''$keytoolStr''').then((value) => handle(value.outText));
   }
 
